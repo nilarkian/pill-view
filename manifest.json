@@ -1,9 +1,9 @@
 {
-	"id": "view",
-	"name": "view",
-	"version": "1.0.0",
-	"minAppVersion": "1.9.0",
-	"description": "view names as buttons",
-	"author": "indigo",
-	"isDesktopOnly": false
+  "id": "pill-view(testing)",
+  "name": "pill-view(testing)",
+  "version": "1.0",
+  "minAppVersion": "1.9.0",
+  "description": "view names as buttons",
+  "author": "indigo",
+  "isDesktopOnly": false
 }
