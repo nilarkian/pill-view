@@ -1,7 +1,3 @@
-Below is a **brief, accurate GitHub README** based on the code structure and behavior of the files you shared.
-
----
-
 # Bases View Tabs (Obsidian Plugin)
 
 Adds **pill-style tabs** for switching between views in **Obsidian Bases**, both for:
