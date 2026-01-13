@@ -47,9 +47,37 @@ export async function injectBasesTabs(app: App) {
       container.className = CONTAINER_CLASS;
       row.appendChild(container);
     }
+    if (!(container as any)._basesClickBound) {
+  container.addEventListener("click", async (e) => {
+//    const btn = (e.target as HTMLElement).closest("button");
+    const btn = (e.target as HTMLElement).closest(
+  ".bases-toolbar-menu-item"
+);
+
+    if (!btn) return;
+
+    const name = btn.textContent;
+
+    const leaf = findLeafForBasesView(app, basesView);
+    if (!leaf) return;
+
+    if ((leaf as any).loadIfDeferred) {
+      await (leaf as any).loadIfDeferred();
+    }
+
+    const controller = (leaf.view as any)?.controller;
+    if (!controller) return;
+
+    controller.selectView(name);
+    updateActive(container!, name);
+  });
+
+  (container as any)._basesClickBound = true;
+}
+
 
     const existing = Array.from(container.children).map(
-      el => (el as HTMLElement).innerText
+      el => (el as HTMLElement).textContent
     );
 
     const same =
@@ -64,20 +92,7 @@ export async function injectBasesTabs(app: App) {
         btn.textContent = name;
         btn.className = "suggestion-item bases-toolbar-menu-item";
 
-        btn.addEventListener("click", async () => {
-          const leaf = findLeafForBasesView(app, basesView);
-          if (!leaf) return;
 
-          if ((leaf as any).loadIfDeferred) {
-            await (leaf as any).loadIfDeferred();
-          }
-
-          const controller = (leaf.view as any)?.controller;
-          if (!controller) return;
-
-          controller.selectView(name);
-          updateActive(container!, name);
-        });
 
         container.appendChild(btn);
       }
