@@ -1,4 +1,4 @@
-// basesTabs.ts
+// basesTabs.base.ts
 import { App } from "obsidian";
 import { parseYaml } from "obsidian";
 import { findLeafForBasesView } from "./leafUtils";
