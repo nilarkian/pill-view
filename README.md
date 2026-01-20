@@ -10,9 +10,11 @@ Adds **pill-style tabs** for switching between views in **Obsidian Bases**, both
 
 ![Demo1](assets/pill.png)
 ---
-![Demo1](assets/pill-bases.gif)
----
-![Demo2](assets/pill-md.gif)
+### Pill Bases
+[![Pill Bases demo](assets/pill.png)](assets/pill-bases.mp4)
+
+### Pill MD
+[![Pill MD demo](assets/pill.png)](assets/pill-md.mp4)
 
 
 
