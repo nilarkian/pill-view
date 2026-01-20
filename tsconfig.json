@@ -3,9 +3,11 @@
     "target": "ES2018",
     "module": "ESNext",
     "moduleResolution": "node",
-    "strict": false,
-    "skipLibCheck": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
-  }
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true
+  },
+  "include": ["**/*.ts"]
 }

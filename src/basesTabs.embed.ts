@@ -9,21 +9,6 @@ type EmbedWithCache = HTMLElement & {
   _basesHeader?: HTMLElement;
 };
 
-let hideStyleInstalled = false;
-
-function ensureHiddenMenuStyle() {
-  if (hideStyleInstalled) return;
-  hideStyleInstalled = true;
-
-  const style = document.createElement("style");
-  style.textContent = `
-    body.pill-hide-bases-menu .menu.bases-toolbar-views-menu {
-      visibility: hidden !important;
-      pointer-events: none !important;
-    }
-  `;
-  document.head.appendChild(style);
-}
 
 export function initBasesEmbedTabs(plugin: Plugin) {
   const observer = new MutationObserver((mutations) => {
@@ -59,13 +44,14 @@ export function initBasesEmbedTabs(plugin: Plugin) {
 
         // Load view names once
         if (!embed._pillViewNames) {
-          readBaseViewNames(plugin, activeFile.path).then((names) => {
-            if (!names) return;
-            embed._pillViewNames = names;
-            removeTabs(embed);
-            injectTabs(embed, header);
-          });
-        }
+  void readBaseViewNames(plugin, activeFile.path).then((names) => {
+    if (!names) return;
+    embed._pillViewNames = names;
+    removeTabs(embed);
+    injectTabs(embed, header);
+  });
+}
+
       }
     }
   });
@@ -118,15 +104,14 @@ function switchEmbedViewByIndex(embed: EmbedWithCache, index: number) {
   const viewButton = header.querySelector<HTMLElement>(".text-icon-button");
   if (!viewButton) return;
 
-  ensureHiddenMenuStyle();
-  document.body.classList.add("pill-hide-bases-menu");
+  document.body.classList.add("pill-hide-bases-menu"); // hide menu
 
   viewButton.click();
 
   requestAnimationFrame(() => {
-    const menu = document.querySelector(
+    const menu = document.querySelector<HTMLElement>(
       ".menu.bases-toolbar-views-menu"
-    ) as HTMLElement | null;
+    );
 
     if (!menu) {
       document.body.classList.remove("pill-hide-bases-menu");
@@ -135,13 +120,12 @@ function switchEmbedViewByIndex(embed: EmbedWithCache, index: number) {
 
     const items = menu.querySelectorAll<HTMLElement>(
       ".suggestion-item.bases-toolbar-menu-item"
-      
     );
 
     items[index]?.click();
 
     requestAnimationFrame(() => {
-      document.body.classList.remove("pill-hide-bases-menu");
+      document.body.classList.remove("pill-hide-bases-menu"); // show menu
     });
   });
 }

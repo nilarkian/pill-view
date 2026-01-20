@@ -69,3 +69,8 @@ background: var(--interactive-accent);
 color: var(--text-on-accent);
  border-color: var(--interactive-accent);
 }
+
+body.pill-hide-bases-menu .menu.bases-toolbar-views-menu {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

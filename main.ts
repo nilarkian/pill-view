@@ -6,15 +6,16 @@ import { initBasesEmbedTabs } from "./src/basesTabs.embed";
 export default class ViewTabsPlugin extends Plugin {
   observer: MutationObserver | null = null;
 
-  async onload() {
-    // .base files (real Bases views)
-    await injectBasesTabs(this.app);
+onload() {
+  // .base files (real Bases views)
+  void injectBasesTabs(this.app); // intentionally async
 
-    // embedded bases inside markdown
-    initBasesEmbedTabs(this);
+  // embedded bases inside markdown
+  initBasesEmbedTabs(this);
 
-    this.startObserver();
-  }
+  this.startObserver();
+}
+
 
   onunload() {
     this.observer?.disconnect();

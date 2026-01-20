@@ -4,6 +4,19 @@ import { parseYaml } from "obsidian";
 import { findLeafForBasesView } from "./leafUtils";
 import { CONTAINER_CLASS, ROW_CLASS, ACTIVE_CLASS } from "./types";
 
+type BasesContainer = HTMLElement & {
+  _basesClickBound?: boolean;
+};
+
+type DeferredLeaf = {
+  loadIfDeferred?: () => Promise<void>;
+};
+
+type BasesController = {
+  selectView: (name: string | null) => void;
+  getActiveView?: () => { name?: string };
+};
+
 export async function injectBasesTabs(app: App) {
   const basesViews = document.querySelectorAll<HTMLElement>(".bases-view");
   if (!basesViews.length) return;
@@ -14,16 +27,17 @@ export async function injectBasesTabs(app: App) {
   let viewNames: string[] = [];
   try {
     const raw = await app.vault.read(file);
-    const { views } = parseYaml(raw) as {
+    const parsed = parseYaml(raw) as {
       views?: { name: string; type: string }[];
     };
-    viewNames = views?.map(v => v.name) ?? [];
+    viewNames = parsed.views?.map(v => v.name) ?? [];
   } catch {
     return;
   }
 
   basesViews.forEach((basesView) => {
-      if (basesView.closest(".cm-embed-block.cm-lang-base")) return;
+    if (basesView.closest(".cm-embed-block.cm-lang-base")) return;
+
     const root = basesView.parentElement;
     if (!root) return;
 
@@ -38,45 +52,46 @@ export async function injectBasesTabs(app: App) {
       header.after(row);
     }
 
-    let container =
-      row.querySelector<HTMLElement>(`.${CONTAINER_CLASS}`);
-      
-
+    let container = row.querySelector<HTMLElement>(`.${CONTAINER_CLASS}`);
     if (!container) {
       container = document.createElement("div");
       container.className = CONTAINER_CLASS;
       row.appendChild(container);
     }
-    if (!(container as any)._basesClickBound) {
-  container.addEventListener("click", async (e) => {
-//    const btn = (e.target as HTMLElement).closest("button");
-    const btn = (e.target as HTMLElement).closest(
-  ".bases-toolbar-menu-item"
-);
 
-    if (!btn) return;
+    const basesContainer = container as BasesContainer;
 
-    const name = btn.textContent;
+    if (!basesContainer._basesClickBound) {
+      basesContainer.addEventListener("click", (e) => {
+        void (async () => {
+          const btn = (e.target as HTMLElement).closest(
+            ".bases-toolbar-menu-item"
+          );
+          if (!btn) return;
 
-    const leaf = findLeafForBasesView(app, basesView);
-    if (!leaf) return;
+          const name = btn.textContent;
 
-    if ((leaf as any).loadIfDeferred) {
-      await (leaf as any).loadIfDeferred();
+          const leaf = findLeafForBasesView(app, basesView);
+          if (!leaf) return;
+
+          const deferred = leaf as unknown as DeferredLeaf;
+          if (deferred.loadIfDeferred) {
+            await deferred.loadIfDeferred();
+          }
+
+          const controller = (leaf.view as unknown as { controller?: BasesController })
+            ?.controller;
+          if (!controller) return;
+
+          controller.selectView(name);
+          updateActive(basesContainer, name);
+        })();
+      });
+
+      basesContainer._basesClickBound = true;
     }
 
-    const controller = (leaf.view as any)?.controller;
-    if (!controller) return;
-
-    controller.selectView(name);
-    updateActive(container!, name);
-  });
-
-  (container as any)._basesClickBound = true;
-}
-
-
-    const existing = Array.from(container.children).map(
+    const existing = Array.from(basesContainer.children).map(
       el => (el as HTMLElement).textContent
     );
 
@@ -85,24 +100,23 @@ export async function injectBasesTabs(app: App) {
       existing.every((n, i) => n === viewNames[i]);
 
     if (!same) {
-      container.empty();
+      basesContainer.empty();
 
       for (const name of viewNames) {
         const btn = document.createElement("button");
         btn.textContent = name;
         btn.className = "suggestion-item bases-toolbar-menu-item";
-
-
-
-        container.appendChild(btn);
+        basesContainer.appendChild(btn);
       }
     }
 
     // sync active state
     const leaf = findLeafForBasesView(app, basesView);
-    const controller = (leaf?.view as any)?.controller;
+    const controller = (leaf?.view as unknown as { controller?: BasesController })
+      ?.controller;
+
     if (controller?.getActiveView) {
-      updateActive(container, controller.getActiveView().name);
+      updateActive(basesContainer, controller.getActiveView().name);
     }
   });
 }
