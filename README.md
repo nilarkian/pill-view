@@ -8,11 +8,13 @@ Adds **pill-style tabs** for switching between views in **Obsidian Bases**, both
 * native `.base` files (real Bases views)
 * embedded ` ```base ` blocks inside Markdown notes
 
-
-
-![Demo1](assets/pill-bases.gif)
-![Demo2](assets/pill-md.gif)
 ![Demo1](assets/pill.png)
+---
+![Demo1](assets/pill-bases.gif)
+---
+![Demo2](assets/pill-md.gif)
+
+
 
 
 
