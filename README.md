@@ -33,3 +33,7 @@ Adds **pill-style tabs** for switching between views in **Obsidian Bases**, both
 
 ---
 
+## known limitation
+#### multiple base blocks in the same note
+
+If a single note contains more than one ```base block, embedded views may incorrectly reuse the views from the first base block in the file. This happens because embed resolution currently reads base definitions at the file level, while Obsidian renders each base block independently at preview time. Until embeds are made block-position aware, only one base block per note is fully supported.
