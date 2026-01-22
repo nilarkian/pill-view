@@ -16,7 +16,7 @@ export function initBasesEmbedTabs(plugin: Plugin) {
     if (!activeFile) return;
 
     for (const m of mutations) {
-      for (const node of m.addedNodes) {
+        for (const node of Array.from(m.addedNodes)) {
         if (!(node instanceof HTMLElement)) continue;
 
         // HARD GATE: only Base embeds
